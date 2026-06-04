@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+
+{% block title %}My Resumes{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row align-items-center mb-4">
+        <div class="col-md-8">
+            <h1 class="mb-0">
+                <i class="fas fa-file-pdf text-primary"></i> My Resumes
+            </h1>
+        </div>
+        <div class="col-md-4 text-md-end">
+            <a href="{{ url_for('resume.upload') }}" class="btn btn-primary">
+                <i class="fas fa-upload"></i> Upload New Resume
+            </a>
+        </div>
+    </div>
+    
+    <!-- Stats -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    <h6 class="text-muted">Total Resumes</h6>
+                    <h2 class="text-primary">{{ stats.total_resumes }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    <h6 class="text-muted">Avg ATS Score</h6>
+                    <h2 class="text-success">{{ stats.avg_ats_score }}/100</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Resumes List -->
+    {% if resumes %}
+        <div class="row">
+            {% for resume in resumes %}
+                <div class="col-md-6 mb-4">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div>
+                                    <h5 class="card-title mb-1">{{ resume.resume_name }}</h5>
+                                    <small class="text-muted">
+                                        Uploaded {{ resume.created_at.strftime('%b %d, %Y') if resume.created_at else 'N/A' }}
+                                    </small>
+                                </div>
+                                {% if resume.ats_score is not none %}
+    <span class="badge bg-success">{{ resume.ats_score }}/100</span>
+{% else %}
+    <span class="badge bg-warning">Not Analyzed</span>
+{% endif %}
+                            </div>
+                            
+                            <p class="card-text text-muted small">
+                                {{ resume.original_content[:100] }}...
+                            </p>
+                            
+                            <div class="btn-group w-100" role="group">
+                                <a href="{{ url_for('resume.analyze', resume_id=resume.id) }}" 
+                                   class="btn btn-sm btn-primary">
+                                    <i class="fas fa-magnifying-glass"></i> Analyze
+                                </a>
+                                <form method="POST" action="{{ url_for('resume.delete_resume', resume_id=resume.id) }}" 
+      style="display:inline;" onsubmit="return confirm('Delete this resume?');">
+    <button type="submit" class="btn btn-sm btn-danger">
+        <i class="fas fa-trash"></i> Delete
+    </button>
+</form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info text-center py-5">
+            <h5 class="mb-2">
+                <i class="fas fa-inbox"></i> No Resumes Yet
+            </h5>
+            <p class="mb-3">Upload your first resume to get started!</p>
+            <a href="{{ url_for('resume.upload') }}" class="btn btn-primary">
+                <i class="fas fa-upload"></i> Upload Resume
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

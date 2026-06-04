@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+
+{% block title %}Upload Resume - AI Resume Builder{% endblock %}
+
+{% block content %}
+<div class="upload-container py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <div class="card shadow-lg border-0">
+                    <div class="card-body p-5">
+                        <h2 class="text-center mb-4">
+                            <i class="fas fa-upload text-primary"></i> Upload Your Resume
+                        </h2>
+                        
+                        {% if error %}
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                <i class="fas fa-exclamation-circle"></i> {{ error }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        {% endif %}
+                        
+                        <form method="POST" enctype="multipart/form-data" class="needs-validation">
+                            <div class="mb-4">
+                                <label for="resume_name" class="form-label">Resume Name</label>
+                                <input type="text" class="form-control" id="resume_name" name="resume_name" 
+                                       placeholder="e.g., Software Engineer Resume" required>
+                                <small class="text-muted">Give your resume a memorable name</small>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label class="form-label">Select PDF File</label>
+                                <div class="upload-area border-2 border-dashed p-5 text-center rounded"
+                                     id="dropZone"
+                                     style="background-color: #f8f9fa; cursor: pointer;">
+                                    <i class="fas fa-file-pdf fa-3x text-muted mb-3"></i>
+                                    <p class="mb-2">Drag and drop your PDF resume here</p>
+                                    <small class="text-muted">or click to browse</small>
+                                    <input type="file" class="form-control d-none" id="file" name="file" 
+                                           accept=".pdf" required>
+                                </div>
+                                <small class="text-muted">Maximum file size: 16MB</small>
+                            </div>
+                            
+                            <div id="file-info" class="mb-3" style="display: none;">
+                                <div class="alert alert-success" role="alert">
+                                    <i class="fas fa-check-circle"></i>
+                                    <strong>File Selected:</strong> <span id="file-name"></span>
+                                    <small class="d-block"><span id="file-size"></span></small>
+                                </div>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary w-100 btn-lg mb-2">
+                                <i class="fas fa-rocket"></i> Upload & Analyze
+                            </button>
+                            
+                            <a href="{{ url_for('dashboard.dashboard') }}" class="btn btn-outline-secondary w-100">
+                                Cancel
+                            </a>
+                        </form>
+                        
+                        <div class="mt-4 p-3 bg-light rounded">
+                            <h6 class="mb-3"><i class="fas fa-lightbulb text-warning"></i> Tips for Best Results:</h6>
+                            <ul class="small mb-0">
+                                <li>Use a clear, professional format</li>
+                                <li>Include relevant keywords for your industry</li>
+                                <li>Keep resume to 1-2 pages</li>
+                                <li>Use standard fonts and formatting</li>
+                                <li>Ensure PDF is readable and not scanned image</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const dropZone = document.getElementById('dropZone');
+    const fileInput = document.getElementById('file');
+    const fileInfo = document.getElementById('file-info');
+    const fileName = document.getElementById('file-name');
+    const fileSize = document.getElementById('file-size');
+    
+    // Click to select file
+    dropZone.addEventListener('click', () => fileInput.click());
+    
+    // Drag and drop
+    dropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropZone.style.backgroundColor = '#e7e9ff';
+    });
+    
+    dropZone.addEventListener('dragleave', () => {
+        dropZone.style.backgroundColor = '#f8f9fa';
+    });
+    
+    dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropZone.style.backgroundColor = '#f8f9fa';
+        fileInput.files = e.dataTransfer.files;
+        updateFileInfo();
+    });
+    
+    // File input change
+    fileInput.addEventListener('change', updateFileInfo);
+    
+    function updateFileInfo() {
+        if (fileInput.files.length > 0) {
+            const file = fileInput.files[0];
+            const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
+            
+            fileName.textContent = file.name;
+            fileSize.textContent = `Size: ${sizeMB} MB`;
+            fileInfo.style.display = 'block';
+        }
+    }
+</script>
+{% endblock %}

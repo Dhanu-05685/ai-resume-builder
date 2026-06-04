@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block title %}Your Cover Letter{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-md-8">
+            <h2 class="mb-4">{{ company_name }} - {{ job_title }}</h2>
+            
+            <div class="card shadow-sm">
+                <div class="card-body p-5">
+                    <div id="letter" style="white-space: pre-wrap; line-height: 1.8; font-size: 1rem;">
+                        {{ cover_letter }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="mb-3">Actions</h5>
+                    <button class="btn btn-primary w-100 mb-2" onclick="window.print()">
+                        <i class="fas fa-print"></i> Print
+                    </button>
+                    <button class="btn btn-secondary w-100 mb-2" onclick="downloadText()">
+                        <i class="fas fa-download"></i> Download
+                    </button>
+                    <button class="btn btn-success w-100" onclick="copyText()">
+                        <i class="fas fa-copy"></i> Copy
+                    </button>
+                </div>
+            </div>
+            
+            <a href="{{ url_for('cover_letter.generate') }}" class="btn btn-outline-primary w-100 mt-3">
+                <i class="fas fa-plus"></i> Generate Another
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+function copyText() {
+    const text = document.getElementById('letter').innerText;
+    navigator.clipboard.writeText(text).then(() => {
+        alert('✅ Copied to clipboard!');
+    });
+}
+
+function downloadText() {
+    const text = document.getElementById('letter').innerText;
+    const element = document.createElement('a');
+    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+    element.setAttribute('download', 'cover_letter.txt');
+    element.style.display = 'none';
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
+}
+</script>
+{% endblock %}

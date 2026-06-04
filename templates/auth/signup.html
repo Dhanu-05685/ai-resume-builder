@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+
+{% block title %}Sign Up - AI Resume Builder{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6 col-lg-5">
+                <div class="card shadow-lg border-0">
+                    <div class="card-body p-5">
+                        <h2 class="text-center mb-4">
+                            <i class="fas fa-user-plus text-primary"></i> Sign Up
+                        </h2>
+                        
+                        {% if error %}
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                <i class="fas fa-exclamation-circle"></i> {{ error }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        {% endif %}
+                        
+                        <form method="POST" class="needs-validation">
+                            <div class="mb-3">
+                                <label for="username" class="form-label">Username</label>
+                                <input type="text" class="form-control" id="username" name="username" 
+                                       placeholder="Choose a username" required minlength="3">
+                                <small class="text-muted">3+ characters, letters and numbers only</small>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email Address</label>
+                                <input type="email" class="form-control" id="email" name="email" 
+                                       placeholder="Enter your email" required>
+                                <small class="text-muted">We'll never share your email</small>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Password</label>
+                                <input type="password" class="form-control" id="password" name="password" 
+                                       placeholder="Create a strong password" required minlength="8">
+                                <small class="text-muted">8+ characters with uppercase, lowercase, and numbers</small>
+                                <div id="password-strength" class="mt-2"></div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="confirm_password" class="form-label">Confirm Password</label>
+                                <input type="password" class="form-control" id="confirm_password" 
+                                       name="confirm_password" placeholder="Confirm your password" required>
+                            </div>
+                            
+                            <div class="mb-3 form-check">
+                                <input type="checkbox" class="form-check-input" id="terms" name="terms" required>
+                                <label class="form-check-label" for="terms">
+                                    I agree to the Terms of Service and Privacy Policy
+                                </label>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary w-100 btn-lg mb-3">
+                                <i class="fas fa-rocket"></i> Create Account
+                            </button>
+                        </form>
+                        
+                        <div class="text-center">
+                            <p class="text-muted">
+                                Already have an account? 
+                                <a href="{{ url_for('auth.login') }}" class="text-decoration-none">Login here</a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .auth-container {
+        min-height: calc(100vh - 200px);
+        display: flex;
+        align-items: center;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    
+    .auth-container .card {
+        border-radius: 10px;
+        background: white;
+    }
+    
+    .auth-container .form-control {
+        border-radius: 5px;
+        border: 1px solid #ddd;
+        padding: 0.75rem;
+    }
+    
+    .auth-container .form-control:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Password strength checker
+    const passwordInput = document.getElementById('password');
+    const strengthDiv = document.getElementById('password-strength');
+    
+    passwordInput.addEventListener('input', function() {
+        const password = this.value;
+        let strength = 0;
+        
+        if (password.length >= 8) strength++;
+        if (/[a-z]/.test(password)) strength++;
+        if (/[A-Z]/.test(password)) strength++;
+        if (/[0-9]/.test(password)) strength++;
+        if (/[^a-zA-Z0-9]/.test(password)) strength++;
+        
+        const strengthText = ['Weak', 'Fair', 'Good', 'Strong', 'Very Strong'];
+        const strengthColor = ['danger', 'warning', 'info', 'success', 'success'];
+        
+        strengthDiv.innerHTML = `<div class="badge bg-${strengthColor[strength-1]}">${strengthText[strength-1]}</div>`;
+    });
+</script>
+{% endblock %}

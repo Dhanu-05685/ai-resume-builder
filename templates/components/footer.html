@@ -1,0 +1,261 @@
+<footer class="bg-dark text-light py-5 mt-5">
+    <div class="container-fluid">
+        <!-- Footer Content Row -->
+        <div class="row mb-5">
+           <!-- About Section -->
+            <div class="col-md-4 mb-4">
+                <h5 class="mb-3">
+                    <i class="fas fa-brain footer-brain-icon"></i> AI Resume Builder
+                </h5>
+                <p class="text-light small footer-about-text">
+                    Empower your job search with AI-powered resume analysis, 
+                    professional cover letters, and interview preparation.
+                </p>
+                <div class="footer-version-badge">
+                    <span class="text-light small">
+                        <i class="fas fa-code-branch"></i> <strong>Version:</strong> 1.0.0
+                    </span>
+                </div>
+            </div>
+            
+            <!-- Quick Links Section -->
+            <div class="col-md-4 mb-4">
+                <h5 class="mb-3">Quick Links</h5>
+                <ul class="list-unstyled footer-quick-links">
+                    <li class="mb-3">
+                        <a href="{{ url_for('index') }}" class="text-light text-decoration-none small">
+                            <i class="fas fa-home"></i> Home
+                        </a>
+                    </li>
+                    <li class="mb-3">
+                        <a href="{{ url_for('resume.upload') }}" class="text-light text-decoration-none small">
+                            <i class="fas fa-upload"></i> Upload Resume
+                        </a>
+                    </li>
+                    <li class="mb-3">
+                        <a href="{{ url_for('cover_letter.generate') }}" class="text-light text-decoration-none small">
+                            <i class="fas fa-file-word"></i> Cover Letter
+                        </a>
+                    </li>
+                    <li class="mb-3">
+                        <a href="{{ url_for('interview.prep') }}" class="text-light text-decoration-none small">
+                            <i class="fas fa-briefcase"></i> Interview Prep
+                        </a>
+                    </li>
+                    {% if 'user_id' in session %}
+                        <li class="mb-3">
+                            <a href="{{ url_for('dashboard.dashboard') }}" class="text-light text-decoration-none small">
+                                <i class="fas fa-chart-line"></i> Dashboard
+                            </a>
+                        </li>
+                        <li class="mb-3">
+                            <a href="{{ url_for('dashboard.my_resumes') }}" class="text-light text-decoration-none small">
+                                <i class="fas fa-file-pdf"></i> My Resumes
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="mb-3">
+                            <a href="{{ url_for('auth.login') }}" class="text-light text-decoration-none small">
+                                <i class="fas fa-sign-in-alt"></i> Login
+                            </a>
+                        </li>
+                        <li class="mb-3">
+                            <a href="{{ url_for('auth.signup') }}" class="text-light text-decoration-none small">
+                                <i class="fas fa-user-plus"></i> Sign Up
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+            
+           <!-- Follow Us Section -->
+            <div class="col-md-4 mb-4">
+                <h5 class="mb-3">Follow Us</h5>
+                
+                <!-- Social Media Icons - BRIGHT AND VISIBLE -->
+                <div class="d-flex gap-3 mb-4 footer-social-icons">
+                    <a href="https://twitter.com" class="text-light text-decoration-none" title="Twitter" target="_blank">
+                        <i class="fab fa-twitter fa-2x"></i>
+                    </a>
+                    <a href="https://linkedin.com" class="text-light text-decoration-none" title="LinkedIn" target="_blank">
+                        <i class="fab fa-linkedin fa-2x"></i>
+                    </a>
+                    <a href="https://github.com" class="text-light text-decoration-none" title="GitHub" target="_blank">
+                        <i class="fab fa-github fa-2x"></i>
+                    </a>
+                    <a href="https://facebook.com" class="text-light text-decoration-none" title="Facebook" target="_blank">
+                        <i class="fab fa-facebook fa-2x"></i>
+                    </a>
+                    <a href="https://instagram.com" class="text-light text-decoration-none" title="Instagram" target="_blank">
+                        <i class="fab fa-instagram fa-2x"></i>
+                    </a>
+                </div>
+                
+                <!-- Newsletter Subscription -->
+                <div>
+                    <p class="small mb-2"><strong>Subscribe to Newsletter:</strong></p>
+                    <form class="d-flex gap-2" method="POST" action="{{ url_for('dashboard.subscribe') }}">
+                        <input type="email" class="form-control form-control-sm" 
+                               name="email" placeholder="Enter email" required>
+                        <button type="submit" class="btn btn-primary btn-sm">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+                
+                        
+        <hr class="bg-secondary">
+        
+        <!-- Footer Bottom -->
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <p class="text-muted small mb-0">
+                    &copy; 2026 AI Resume Builder. All rights reserved.
+                </p>
+            </div>
+            <div class="col-md-6 text-md-end">
+                <a href="#" class="text-muted text-decoration-none small me-3">Privacy Policy</a>
+                <a href="#" class="text-muted text-decoration-none small me-3">Terms of Service</a>
+                <a href="#" class="text-muted text-decoration-none small">Contact Us</a>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<style>
+    /* Footer Styling */
+    footer {
+        background: linear-gradient(135deg, #1a1f36 0%, #16213e 100%);
+        margin-top: auto;
+    }
+    
+    /* Footer Headings */
+    footer h5 {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #fff;
+        margin-bottom: 1rem;
+    }
+    
+    /* Social Icons - MAKE VISIBLE */
+    footer .footer-social-icons a {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 50px;
+        height: 50px;
+        background-color: rgba(102, 126, 234, 0.2);
+        border-radius: 50%;
+        color: #ffffff !important;
+        transition: all 0.3s ease;
+        border: 2px solid #667eea;
+    }
+    
+    footer .footer-social-icons a:hover {
+        background-color: #667eea !important;
+        color: #ffffff !important;
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+    }
+    
+    footer .footer-social-icons a i {
+        color: #ffffff !important;
+        font-size: 1.5rem;
+    }
+    
+    /* Links */
+    footer a {
+        transition: color 0.3s ease;
+    }
+    
+    footer a:hover {
+        color: #667eea !important;
+    }
+    
+    /* Form */
+    footer .form-control {
+        background-color: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.2);
+        color: #fff;
+    }
+    
+    footer .form-control::placeholder {
+        color: rgba(255, 255, 255, 0.5);
+    }
+    
+    footer .form-control:focus {
+        background-color: rgba(255, 255, 255, 0.15);
+        border-color: #667eea;
+        color: #fff;
+        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    }
+    
+    footer .btn-primary:hover {
+        background-color: #764ba2;
+        border-color: #764ba2;
+    }
+    
+    /* Mobile Responsive */
+    @media (max-width: 768px) {
+        footer h5 {
+            font-size: 0.95rem;
+        }
+        
+        footer .col-md-4 {
+            margin-bottom: 1.5rem;
+        }
+        
+        footer small {
+            font-size: 0.85rem;
+        }
+    }
+/* Quick Links - MAKE VISIBLE */
+    footer .footer-quick-links a {
+        color: #ffffff !important;
+        transition: all 0.3s ease;
+        padding: 0.5rem 0;
+        display: inline-block;
+    }
+    
+    footer .footer-quick-links a i {
+        color: #667eea !important;
+        width: 20px;
+        margin-right: 0.5rem;
+        font-size: 1rem;
+    }
+    
+    footer .footer-quick-links a:hover {
+        color: #667eea !important;
+        padding-left: 0.5rem;
+    }
+    
+    footer .footer-quick-links a:hover i {
+        transform: translateX(5px);
+    }
+/* AI Resume Builder Section - MAKE VISIBLE */
+    footer .footer-brain-icon {
+        color: #667eea !important;
+        margin-right: 0.5rem;
+        font-size: 1.3rem;
+    }
+    
+    footer .footer-about-text {
+        color: #ffffff !important;
+        line-height: 1.6;
+        margin-bottom: 1rem;
+    }
+    
+    footer .footer-version-badge {
+        background: rgba(102, 126, 234, 0.15);
+        padding: 0.75rem 1rem;
+        border-left: 3px solid #667eea;
+        border-radius: 4px;
+        display: inline-block;
+    }
+    
+    footer .footer-version-badge i {
+        color: #667eea !important;
+        margin-right: 0.5rem;
+    }
+</style>

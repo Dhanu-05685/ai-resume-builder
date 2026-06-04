@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block title %}Interview Prep Results{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h1 class="mb-4">{{ job_title }} @ {{ company_name }}</h1>
+    
+    <div class="row">
+        <div class="col-md-8">
+            <!-- Questions -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-question-circle"></i> Interview Questions</h5>
+                </div>
+                <div class="card-body">
+                    <pre style="white-space: pre-wrap;">{{ questions }}</pre>
+                </div>
+            </div>
+            
+            <!-- Tips -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="fas fa-lightbulb"></i> Interview Tips</h5>
+                </div>
+                <div class="card-body">
+                    <pre style="white-space: pre-wrap;">{{ tips }}</pre>
+                </div>
+            </div>
+            
+            <!-- Sample Answers -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-warning">
+                    <h5 class="mb-0"><i class="fas fa-comments"></i> Sample Answers</h5>
+                </div>
+                <div class="card-body">
+                    <pre style="white-space: pre-wrap;">{{ answers }}</pre>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card shadow-sm sticky-top" style="top: 20px;">
+                <div class="card-body">
+                    <h5 class="mb-3">Actions</h5>
+                    <button class="btn btn-primary w-100 mb-2" onclick="window.print()">
+                        <i class="fas fa-print"></i> Print
+                    </button>
+                    <a href="{{ url_for('interview.prep') }}" class="btn btn-outline-primary w-100">
+                        <i class="fas fa-plus"></i> New Prep
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

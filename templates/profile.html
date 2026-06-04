@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+
+{% block title %}User Profile{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <h1 class="mb-4">
+                <i class="fas fa-user-circle"></i> Your Profile
+            </h1>
+            
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4">
+                    <!-- Profile Picture -->
+                    <div class="text-center mb-4">
+                        <div class="avatar mb-3">
+                            <i class="fas fa-user-circle fa-5x text-primary"></i>
+                        </div>
+                        <h3>{{ user.username }}</h3>
+                        <p class="text-muted">{{ user.email }}</p>
+                    </div>
+                    
+                    <!-- Profile Info -->
+                    <hr>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h6 class="text-muted">Username</h6>
+                            <p class="fw-bold">{{ user.username }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-muted">Email Address</h6>
+                            <p class="fw-bold">{{ user.email }}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h6 class="text-muted">Account Created</h6>
+                            <p class="fw-bold">
+                                {% if user.created_at %}
+                                    {{ user.created_at.strftime('%B %d, %Y') }}
+                                {% else %}
+                                    N/A
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-muted">Bio</h6>
+                            <p class="fw-bold">{{ user.bio if user.bio else 'Not set' }}</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Bio Section -->
+                    <hr>
+                    
+                    <div class="mb-4">
+                        <h6 class="text-muted mb-3">Professional Bio</h6>
+                        <div class="alert alert-light">
+                            <p class="mb-0">
+                                {{ user.bio if user.bio else 'You haven\'t added a bio yet. Add one in settings!' }}
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <!-- Action Buttons -->
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('dashboard.settings') }}" class="btn btn-primary">
+                            <i class="fas fa-edit"></i> Edit Profile
+                        </a>
+                        <a href="{{ url_for('dashboard.dashboard') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left"></i> Back
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Account Stats -->
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <div class="card shadow-sm">
+                        <div class="card-body text-center">
+                            <h6 class="text-muted">Total Resumes</h6>
+                            <h2 class="text-primary">
+                                {% if stats %}
+                                    {{ stats.get('total_resumes', 0) }}
+                                {% else %}
+                                    0
+                                {% endif %}
+                            </h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card shadow-sm">
+                        <div class="card-body text-center">
+                            <h6 class="text-muted">Avg ATS Score</h6>
+                            <h2 class="text-success">
+                                {% if stats %}
+                                    {{ stats.get('avg_ats_score', 0) }}/100
+                                {% else %}
+                                    --
+                                {% endif %}
+                            </h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

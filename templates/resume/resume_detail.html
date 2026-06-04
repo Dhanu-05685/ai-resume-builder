@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+
+{% block title %}Resume Details - AI Resume Builder{% endblock %}
+
+{% block content %}
+<div class="resume-detail-container py-5">
+    <div class="container">
+        <div class="row mb-4">
+            <div class="col-md-8">
+                <h1 class="mb-2">{{ resume.resume_name }}</h1>
+                <p class="text-muted">
+                    <i class="fas fa-calendar"></i>
+                    Uploaded on {{ resume.created_at.strftime('%B %d, %Y') }}
+                </p>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <a href="{{ url_for('dashboard.my_resumes') }}" class="btn btn-outline-primary">
+                    <i class="fas fa-arrow-left"></i> Back
+                </a>
+            </div>
+        </div>
+        
+        <!-- Quick Stats -->
+        <div class="row mb-4">
+            <div class="col-md-3 mb-3">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body text-center">
+                        <h6 class="text-muted text-uppercase">ATS Score</h6>
+                        <h2 class="text-primary">{{ resume.ats_score }}/100</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body text-center">
+                        <h6 class="text-muted text-uppercase">Status</h6>
+                        {% if resume.ats_score %}
+                            <span class="badge bg-success fs-6">Analyzed</span>
+                        {% else %}
+                            <span class="badge bg-warning fs-6">Pending</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body">
+                        <h6 class="text-muted text-uppercase mb-3">Quick Actions</h6>
+                        <a href="{{ url_for('resume.analyze', resume_id=resume.id) }}" class="btn btn-sm btn-primary">
+                            <i class="fas fa-search"></i> View Full Analysis
+                        </a>
+                        <button class="btn btn-sm btn-danger" onclick="deleteResume({{ resume.id }})">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Resume Preview -->
+        {% if resume.original_content %}
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-light">
+                <h5 class="mb-0"><i class="fas fa-file-alt"></i> Resume Content Preview</h5>
+            </div>
+            <div class="card-body">
+                <div class="resume-preview p-4 bg-light rounded" style="max-height: 400px; overflow-y: auto;">
+                    <pre style="white-space: pre-wrap; word-wrap: break-word;">{{ resume.original_content[:1000] }}...</pre>
+                </div>
+                <small class="text-muted d-block mt-2">
+                    Showing first 1000 characters of resume
+                </small>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function deleteResume(resumeId) {
+        if (confirm('Are you sure you want to delete this resume?')) {
+            fetch(`/resume/api/delete/${resumeId}`, { method: 'DELETE' })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        window.location.href = "{{ url_for('dashboard.my_resumes') }}";
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        }
+    }
+</script>
+{% endblock %}

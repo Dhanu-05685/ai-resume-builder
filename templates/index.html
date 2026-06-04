@@ -1,0 +1,165 @@
+{% extends 'base.html' %}
+
+{% block title %}Home - AI Resume Builder{% endblock %}
+
+{% block content %}
+<div class="hero-section text-center py-5 bg-light">
+    <div class="container">
+        <h1 class="display-4 fw-bold mb-4">
+            <i class="fas fa-brain text-primary"></i> AI Resume Builder
+        </h1>
+        <p class="lead text-muted mb-4">
+            Enhance your resume with AI-powered analysis, ATS scoring, and professional recommendations
+        </p>
+        
+        {% if not user_id %}
+            <div class="btn-group gap-2" role="group">
+                <a href="{{ url_for('auth.signup') }}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-rocket"></i> Get Started
+                </a>
+                <a href="{{ url_for('auth.login') }}" class="btn btn-outline-primary btn-lg">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </a>
+            </div>
+        {% else %}
+            <a href="{{ url_for('resume.upload') }}" class="btn btn-primary btn-lg">
+                <i class="fas fa-upload"></i> Upload Your Resume
+            </a>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Features Section -->
+<section class="features-section py-5" id="features">
+    <div class="container">
+        <h2 class="text-center mb-5">Why Choose AI Resume Builder?</h2>
+        
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-3">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center">
+                        <i class="fas fa-robot fa-3x text-primary mb-3"></i>
+                        <h5 class="card-title">AI Powered Analysis</h5>
+                        <p class="card-text text-muted">
+                            Advanced AI analyzes your resume instantly and provides actionable insights
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6 col-lg-3">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center">
+                        <i class="fas fa-chart-bar fa-3x text-success mb-3"></i>
+                        <h5 class="card-title">ATS Score Check</h5>
+                        <p class="card-text text-muted">
+                            Get instant ATS score to ensure your resume passes through tracking systems
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6 col-lg-3">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center">
+                        <i class="fas fa-lightbulb fa-3x text-warning mb-3"></i>
+                        <h5 class="card-title">Smart Suggestions</h5>
+                        <p class="card-text text-muted">
+                            Receive personalized recommendations to improve your resume
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6 col-lg-3">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center">
+                        <i class="fas fa-briefcase fa-3x text-info mb-3"></i>
+                        <h5 class="card-title">Job Recommendations</h5>
+                        <p class="card-text text-muted">
+                            Get personalized job title recommendations based on your profile
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works Section -->
+<section class="how-it-works py-5 bg-light">
+    <div class="container">
+        <h2 class="text-center mb-5">How It Works</h2>
+        
+        <div class="row">
+            <div class="col-md-4 mb-4 text-center">
+                <div class="step-number">1</div>
+                <h5>Upload Your Resume</h5>
+                <p class="text-muted">Simply upload your PDF resume to get started</p>
+            </div>
+            <div class="col-md-4 mb-4 text-center">
+                <div class="step-number">2</div>
+                <h5>AI Analysis</h5>
+                <p class="text-muted">Our AI analyzes your resume and generates insights</p>
+            </div>
+            <div class="col-md-4 mb-4 text-center">
+                <div class="step-number">3</div>
+                <h5>Get Results</h5>
+                <p class="text-muted">Receive ATS score, suggestions, and job recommendations</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section py-5">
+    <div class="container text-center">
+        <h2 class="mb-4">Ready to Improve Your Resume?</h2>
+        <p class="lead text-muted mb-4">
+            Join thousands of job seekers using AI Resume Builder to land their dream jobs
+        </p>
+        {% if not user_id %}
+            <a href="{{ url_for('auth.signup') }}" class="btn btn-primary btn-lg">
+                <i class="fas fa-star"></i> Start Free Today
+            </a>
+        {% else %}
+            <a href="{{ url_for('resume.upload') }}" class="btn btn-primary btn-lg">
+                <i class="fas fa-upload"></i> Upload Resume Now
+            </a>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .hero-section {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+    
+    .hero-section .btn-group .btn {
+        font-size: 1.1rem;
+        padding: 0.75rem 2rem;
+    }
+    
+    .step-number {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background-color: #667eea;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        font-weight: bold;
+        margin: 0 auto 1rem;
+    }
+    
+    .cta-section {
+        background-color: #f8f9fa;
+        border-top: 1px solid #dee2e6;
+    }
+</style>
+{% endblock %}
