@@ -3,7 +3,8 @@ from flask import Flask, render_template, request, redirect, url_for, session, j
 from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
 from dotenv import load_dotenv
-import mysql.connector
+import pymysql
+pymysql.install_as_MySQLdb()
 
 # Import routes
 from routes.auth_routes import auth_bp
@@ -11,6 +12,7 @@ from routes.resume_routes import resume_bp
 from routes.dashboard_routes import dashboard_bp
 from routes.cover_letter_routes import cover_letter_bp
 from routes.interview_routes import interview_bp
+
 # Import utilities
 from utils.validators import validate_email, validate_password
 from database.db_helper import DatabaseHelper
@@ -27,6 +29,7 @@ app.register_blueprint(resume_bp, url_prefix='/resume')
 app.register_blueprint(dashboard_bp, url_prefix='/dashboard')
 app.register_blueprint(cover_letter_bp, url_prefix='/cover-letter')
 app.register_blueprint(interview_bp, url_prefix='/interview')
+
 # Login required decorator
 def login_required(f):
     @wraps(f)
@@ -37,7 +40,6 @@ def login_required(f):
     return decorated_function
 
 # ============ ERROR HANDLERS ============
-
 @app.errorhandler(404)
 def not_found(error):
     return render_template('404.html'), 404
@@ -47,7 +49,6 @@ def server_error(error):
     return render_template('500.html'), 500
 
 # ============ MAIN ROUTES ============
-
 @app.route('/')
 def index():
     if 'user_id' in session:
@@ -71,7 +72,6 @@ def logout():
     return redirect(url_for('index'))
 
 # ============ API ENDPOINTS ============
-
 @app.route('/api/health')
 def health_check():
     return jsonify({'status': 'ok', 'message': 'AI Resume Builder API is running'})
@@ -89,7 +89,6 @@ def get_user_info():
     return jsonify({'error': 'User not found'}), 404
 
 # ============ STATIC FILE HANDLER ============
-
 @app.route('/uploads/resumes/<filename>')
 @login_required
 def download_resume(filename):
@@ -98,26 +97,33 @@ def download_resume(filename):
     return redirect(url_for('static', filename=f'uploads/resumes/{filename}'))
 
 # ============ TEMPLATE CONTEXT ============
-
 @app.context_processor
 def inject_user():
     user_id = session.get('user_id')
     username = session.get('username')
     return dict(user_id=user_id, username=username)
 
-# ============ RUN APP ============
-
+# ============ RUN APP (PRODUCTION & DEVELOPMENT) ============
 if __name__ == '__main__':
-    debug_mode = os.getenv('FLASK_ENV') == 'development'
-    app.run(
-        debug=debug_mode,
-        host='127.0.0.1',
-        port=5000,
-        use_reloader=debug_mode
-    )
-
-if __name__ == '__main__':
-    # For production (Render)
-    import os
-    port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port, debug=False)
+    # Get environment variables
+    flask_env = os.getenv('FLASK_ENV', 'production')
+    port = int(os.getenv('PORT', 5000))
+    
+    if flask_env == 'development':
+        # Local development
+        print("🚀 Running in DEVELOPMENT mode")
+        app.run(
+            debug=True,
+            host='127.0.0.1',
+            port=5000,
+            use_reloader=True
+        )
+    else:
+        # Production (Render)
+        print("🚀 Running in PRODUCTION mode")
+        app.run(
+            debug=False,
+            host='0.0.0.0',
+            port=port,
+            use_reloader=False
+        )

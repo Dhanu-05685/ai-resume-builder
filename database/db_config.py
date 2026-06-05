@@ -1,6 +1,6 @@
 import os
-import mysql.connector
-from mysql.connector import Error
+import pymysql
+from pymysql import Error
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -14,23 +14,25 @@ class DatabaseConfig:
         self.password = os.getenv('MYSQL_PASSWORD', '')
         self.database = os.getenv('MYSQL_DATABASE', 'ai_resume_builder')
         self.port = int(os.getenv('MYSQL_PORT', 3306))
-
+    
     def get_connection(self):
         """Create and return database connection"""
         try:
-            connection = mysql.connector.connect(
+            connection = pymysql.connect(
                 host=self.host,
                 user=self.user,
                 password=self.password,
                 database=self.database,
                 port=self.port,
-                autocommit=False
+                autocommit=False,
+                charset='utf8mb4',
+                cursorclass=pymysql.cursors.DictCursor
             )
             return connection
         except Error as e:
-            print(f"Error connecting to MySQL: {e}")
+            print(f"❌ Error connecting to MySQL: {e}")
             return None
-
+    
     def test_connection(self):
         """Test if connection is working"""
         connection = self.get_connection()
