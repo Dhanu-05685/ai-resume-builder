@@ -1,36 +1,33 @@
 import os
-import pymysql
-from pymysql import Error
+import psycopg2
+from psycopg2 import Error
 from dotenv import load_dotenv
 
 load_dotenv()
 
 class DatabaseConfig:
-    """Database configuration and connection handler"""
+    """PostgreSQL database configuration and connection handler"""
     
     def __init__(self):
-        self.host = os.getenv('MYSQL_HOST', 'localhost')
-        self.user = os.getenv('MYSQL_USER', 'root')
-        self.password = os.getenv('MYSQL_PASSWORD', '')
-        self.database = os.getenv('MYSQL_DATABASE', 'ai_resume_builder')
-        self.port = int(os.getenv('MYSQL_PORT', 3306))
+        self.host = os.getenv('DB_HOST', 'localhost')
+        self.user = os.getenv('DB_USER', 'postgres')
+        self.password = os.getenv('DB_PASSWORD', '')
+        self.database = os.getenv('DB_NAME', 'ai_resume_builder')
+        self.port = os.getenv('DB_PORT', '5432')
     
     def get_connection(self):
-        """Create and return database connection"""
+        """Create and return PostgreSQL connection"""
         try:
-            connection = pymysql.connect(
+            connection = psycopg2.connect(
                 host=self.host,
                 user=self.user,
                 password=self.password,
                 database=self.database,
-                port=self.port,
-                autocommit=False,
-                charset='utf8mb4',
-                cursorclass=pymysql.cursors.DictCursor
+                port=self.port
             )
             return connection
         except Error as e:
-            print(f"❌ Error connecting to MySQL: {e}")
+            print(f"❌ Error connecting to PostgreSQL: {e}")
             return None
     
     def test_connection(self):

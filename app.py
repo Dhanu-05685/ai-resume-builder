@@ -3,8 +3,7 @@ from flask import Flask, render_template, request, redirect, url_for, session, j
 from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
 from dotenv import load_dotenv
-import pymysql
-pymysql.install_as_MySQLdb()
+import psycopg2
 
 # Import routes
 from routes.auth_routes import auth_bp
@@ -22,7 +21,6 @@ load_dotenv()
 app = Flask(__name__)
 app.secret_key = os.getenv('SECRET_KEY', 'your-secret-key-change-this')
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
-
 # Register blueprints
 app.register_blueprint(auth_bp, url_prefix='/auth')
 app.register_blueprint(resume_bp, url_prefix='/resume')
@@ -127,3 +125,4 @@ if __name__ == '__main__':
             port=port,
             use_reloader=False
         )
+

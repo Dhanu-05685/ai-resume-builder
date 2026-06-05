@@ -1,88 +1,63 @@
--- ============================================
--- Create AI Resume Builder Database
--- ============================================
-
--- Drop if exists (careful!)
-DROP DATABASE IF EXISTS ai_resume_builder;
-
--- Create database
-CREATE DATABASE ai_resume_builder;
-USE ai_resume_builder;
-
--- ============================================
--- USERS TABLE
--- ============================================
-CREATE TABLE users (
-    id INT PRIMARY KEY AUTO_INCREMENT,
+-- Create Users Table
+CREATE TABLE IF NOT EXISTS users (
+    id SERIAL PRIMARY KEY,
     username VARCHAR(100) UNIQUE NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
-    profile_pic VARCHAR(255),
-    bio TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    
-    INDEX idx_email (email),
-    INDEX idx_username (username)
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- ============================================
--- RESUMES TABLE
--- ============================================
-CREATE TABLE resumes (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    user_id INT NOT NULL,
-    resume_name VARCHAR(200) NOT NULL,
-    original_content LONGTEXT,
-    ai_suggestions LONGTEXT,
-    ats_score INT DEFAULT NULL,
-    professional_summary LONGTEXT,
-    job_recommendations LONGTEXT,
-    file_path VARCHAR(255),
-    views INT DEFAULT 0,
+-- Create Resumes Table
+CREATE TABLE IF NOT EXISTS resumes (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL,
+    file_name VARCHAR(255) NOT NULL,
+    original_content TEXT NOT NULL,
+    ats_score INTEGER DEFAULT NULL,
+    professional_summary TEXT,
+    ai_suggestions TEXT,
+    job_recommendations VARCHAR(500),
+    uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+-- Create Cover Letters Table
+CREATE TABLE IF NOT EXISTS cover_letters (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL,
+    resume_id INTEGER,
+    job_title VARCHAR(255),
+    company_name VARCHAR(255),
+    content TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    INDEX idx_user_id (user_id),
-    INDEX idx_created_at (created_at)
+    FOREIGN KEY (resume_id) REFERENCES resumes(id) ON DELETE SET NULL
 );
 
--- ============================================
--- SKILLS TABLE
--- ============================================
-CREATE TABLE skills (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    resume_id INT NOT NULL,
-    skill_name VARCHAR(100) NOT NULL,
-    proficiency VARCHAR(50),
-    category VARCHAR(100),
+-- Create Interview Prep Table
+CREATE TABLE IF NOT EXISTS interview_prep (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL,
+    resume_id INTEGER,
+    job_title VARCHAR(255),
+    company_name VARCHAR(255),
+    questions TEXT,
+    tips TEXT,
+    answers TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    
-    FOREIGN KEY (resume_id) REFERENCES resumes(id) ON DELETE CASCADE,
-    INDEX idx_resume_id (resume_id)
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (resume_id) REFERENCES resumes(id) ON DELETE SET NULL
 );
 
--- ============================================
--- ANALYTICS TABLE
--- ============================================
-CREATE TABLE analytics (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    user_id INT,
-    action VARCHAR(100),
-    details LONGTEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL,
-    INDEX idx_user_id (user_id),
-    INDEX idx_action (action)
+-- Create Subscriptions Table
+CREATE TABLE IF NOT EXISTS subscriptions (
+    id SERIAL PRIMARY KEY,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- ============================================
--- VERIFY TABLES CREATED
--- ============================================
-SHOW TABLES;
-DESCRIBE users;
-DESCRIBE resumes;
-DESCRIBE skills;
-DESCRIBE analytics;
+-- Create indexes
+CREATE INDEX IF NOT EXISTS idx_resumes_user_id ON resumes(user_id);
+CREATE INDEX IF NOT EXISTS idx_cover_letters_user_id ON cover_letters(user_id);
+CREATE INDEX IF NOT EXISTS idx_interview_prep_user_id ON interview_prep(user_id);
