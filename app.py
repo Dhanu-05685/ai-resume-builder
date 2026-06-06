@@ -68,6 +68,23 @@ def contact():
 def logout():
     session.clear()
     return redirect(url_for('index'))
+# DEBUG ROUTE (remove after testing)
+@app.route('/debug/resumes')
+def debug_resumes():
+    from database.db_helper import get_user_resumes
+    from flask import session
+    
+    if 'user_id' not in session:
+        return "Not logged in"
+    
+    user_id = session.get('user_id')
+    resumes = get_user_resumes(user_id)
+    
+    return {
+        'user_id': user_id,
+        'resumes_count': len(resumes) if resumes else 0,
+        'resumes': resumes
+    }
 
 # ============ API ENDPOINTS ============
 @app.route('/api/health')
