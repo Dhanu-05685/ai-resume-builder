@@ -17,20 +17,20 @@
                 {% endfor %}
             {% endif %}
 
-            <form method="POST" class="card p-4">
+            <form method="POST" class="card p-4" enctype="multipart/form-data">
                 <div class="mb-4">
                     <label class="form-label"><strong>Choose Resume:</strong></label>
                     <div class="btn-group w-100 mb-3" role="group">
-                        <input type="radio" class="btn-check" name="tab" id="select-tab" checked>
+                        <input type="radio" class="btn-check" name="tab" id="select-tab" checked onchange="showSelectTab()">
                         <label class="btn btn-outline-primary" for="select-tab">Select Existing</label>
-                        <input type="radio" class="btn-check" name="tab" id="upload-tab">
+                        <input type="radio" class="btn-check" name="tab" id="upload-tab" onchange="showUploadTab()">
                         <label class="btn btn-outline-primary" for="upload-tab">Upload New</label>
                     </div>
 
                     <!-- Select Existing Resume -->
                     <div id="select-section">
                         {% if resumes and resumes|length > 0 %}
-                            <select name="resume_id" class="form-control" required>
+                            <select name="resume_id" class="form-control" id="resume_select">
                                 <option value="">-- Choose a resume --</option>
                                 {% for resume in resumes %}
                                     <option value="{{ resume['id'] }}">
@@ -53,13 +53,13 @@
 
                     <!-- Upload New Resume -->
                     <div id="upload-section" style="display:none;">
-                        <input type="file" name="new_resume" class="form-control" accept=".pdf,.txt,.docx">
+                        <input type="file" name="new_resume" class="form-control" id="file_upload" accept=".pdf,.txt,.docx,.doc">
                         <small class="text-muted">Accepted: PDF, TXT, DOCX</small>
                     </div>
                 </div>
 
                 <div class="mb-3">
-                    <label for="job_title" class="form-label"><strong>Job Title:</strong></label>
+                    <label for="job_title" class="form-label"><strong>Job Title: *</strong></label>
                     <input type="text" class="form-control" id="job_title" name="job_title" 
                            placeholder="e.g., Senior Software Engineer" required>
                 </div>
@@ -79,14 +79,18 @@
 </div>
 
 <script>
-    document.getElementById('select-tab').addEventListener('change', function() {
-        document.getElementById('select-section').style.display = 'block';
-        document.getElementById('upload-section').style.display = 'none';
-    });
-    
-    document.getElementById('upload-tab').addEventListener('change', function() {
-        document.getElementById('select-section').style.display = 'none';
-        document.getElementById('upload-section').style.display = 'block';
-    });
+function showSelectTab() {
+    document.getElementById('select-section').style.display = 'block';
+    document.getElementById('upload-section').style.display = 'none';
+    document.getElementById('resume_select').setAttribute('required', 'required');
+    document.getElementById('file_upload').removeAttribute('required');
+}
+
+function showUploadTab() {
+    document.getElementById('select-section').style.display = 'none';
+    document.getElementById('upload-section').style.display = 'block';
+    document.getElementById('file_upload').setAttribute('required', 'required');
+    document.getElementById('resume_select').removeAttribute('required');
+}
 </script>
 {% endblock %}

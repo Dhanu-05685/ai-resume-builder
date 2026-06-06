@@ -386,23 +386,87 @@ Thank you for your consideration.
 Sincerely,
 [Your Name]"""
 
-def generate_interview_prep(resume_text, job_title, company_name=""):
-    """Generate interview prep"""
+def generate_interview_prep(resume_text, job_title, company_name=''):
+    """Generate interview questions, tips, and sample answers"""
+    try:
+        prompt = f"""
+Based on this resume and job position, generate comprehensive interview preparation:
+
+RESUME:
+{resume_text[:2000]}
+
+JOB TITLE: {job_title}
+COMPANY: {company_name if company_name else 'Not specified'}
+
+Please provide in JSON format ONLY (no markdown, no extra text):
+{{
+    "questions": "List 5-7 interview questions likely to be asked. Format: 1. Question? 2. Question? etc.",
+    "tips": "5-7 tips for answering interview questions. Format: 1. Tip 2. Tip etc.",
+    "answers": "Sample answers framework for common questions asked for {job_title} role."
+}}
+
+IMPORTANT: Return ONLY valid JSON, nothing else.
+"""
+        
+        # Try Gemini API
+        try:
+            response = genai.generate_text(prompt=prompt, max_output_tokens=1000)
+            
+            if response and response.result:
+                import json
+                text = response.result.strip()
+                
+                # Extract JSON if wrapped in markdown
+                if '```json' in text:
+                    text = text.split('```json')[1].split('```')[0]
+                elif '```' in text:
+                    text = text.split('```')[1].split('```')[0]
+                
+                data = json.loads(text)
+                return {
+                    'questions': data.get('questions', 'No questions generated'),
+                    'tips': data.get('tips', 'No tips generated'),
+                    'answers': data.get('answers', 'No sample answers generated')
+                }
+        except Exception as e:
+            print(f"⚠️ Gemini API failed: {e}, using local generation")
+        
+        # LOCAL FALLBACK
+        questions = f"""
+1. Tell me about your experience with {job_title.lower()} work
+2. What are your strengths for a {job_title} role?
+3. Describe your most challenging project related to {job_title}
+4. How do you stay updated with latest technologies?
+5. Why do you want to work at {company_name if company_name else 'our company'}?
+6. What are your salary expectations?
+7. Where do you see yourself in 5 years?
+"""
+        
+        tips = """
+1. Use STAR method (Situation, Task, Action, Result) for behavioral questions
+2. Research the company and role thoroughly before the interview
+3. Practice your answers but don't memorize them completely
+4. Ask thoughtful questions about the role and company
+5. Maintain eye contact and positive body language
+6. Show enthusiasm and genuine interest in the position
+7. Follow up with a thank-you email after the interview
+"""
+        
+        answers = f"""
+Sample Framework for {job_title}:
+- Highlight relevant experience and skills from your resume
+- Use specific examples and metrics to demonstrate impact
+- Show problem-solving abilities and how you handle challenges
+- Emphasize learning and growth mindset
+- Connect your skills directly to the job requirements
+"""
+        
+        return {
+            'questions': questions,
+            'tips': tips,
+            'answers': answers
+        }
     
-    return {
-        'questions': f"""1. Walk us through your experience relevant to {job_title}
-2. Why are you interested in {company_name}?
-3. Describe your greatest professional achievement
-4. Tell us about a challenge you overcame
-5. What specific skills apply to this role?
-6. How do you stay updated with industry trends?
-7. What are your career goals?""",
-        'tips': """1. Research the company thoroughly before the interview
-2. Prepare specific examples from your actual work experience
-3. Use the STAR method (Situation, Task, Action, Result) for behavioral questions
-4. Highlight quantifiable achievements and metrics
-5. Ask thoughtful questions about the role and company culture
-6. Be ready to discuss projects and technical accomplishments
-7. Follow up with a thank you email after the interview""",
-        'answers': "Use the STAR method (Situation, Task, Action, Result) with specific examples from your resume for maximum impact."
-    }
+    except Exception as e:
+        print(f"❌ Interview prep error: {e}")
+        return None

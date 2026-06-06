@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, session, jsonify, redirect, url_for, flash
+from flask import Blueprint, render_template, request, session, redirect, url_for, flash
 from functools import wraps
 from database.db_helper import get_user_resumes, get_resume, save_cover_letter
 from utils.ai_analyzer import generate_cover_letter
@@ -18,38 +18,65 @@ def login_required(f):
 def generate():
     """Generate cover letter"""
     user_id = session.get('user_id')
-    
-    # Get user's resumes
-    resumes = get_user_resumes(user_id)
-    if not resumes:
-        resumes = []
+    resumes = get_user_resumes(user_id) or []
     
     if request.method == 'POST':
         try:
-            resume_id = request.form.get('resume_id')
-            job_title = request.form.get('job_title', '')
-            company_name = request.form.get('company_name', '')
+            resume_text = None
+            resume_id = None
+            job_title = request.form.get('job_title', '').strip()
+            company_name = request.form.get('company_name', '').strip()
             
-            if not resume_id:
-                flash('Please select a resume', 'error')
+            # Option 1: Select Existing Resume
+            if request.form.get('resume_id'):
+                resume_id = int(request.form.get('resume_id'))
+                resume = get_resume(resume_id, user_id)
+                
+                if not resume:
+                    flash('❌ Resume not found', 'error')
+                    return redirect(url_for('cover_letter.generate'))
+                
+                resume_text = resume['original_content'] if isinstance(resume, dict) else resume[3]
+            
+            # Option 2: Upload New File
+            elif 'new_resume' in request.files:
+                file = request.files['new_resume']
+                if file.filename == '':
+                    flash('❌ No file selected', 'error')
+                    return redirect(url_for('cover_letter.generate'))
+                
+                try:
+                    resume_text = file.read().decode('utf-8', errors='ignore')
+                except Exception as e:
+                    flash(f'❌ Error reading file: {str(e)[:100]}', 'error')
+                    return redirect(url_for('cover_letter.generate'))
+            
+            else:
+                flash('❌ Please select or upload a resume', 'error')
                 return redirect(url_for('cover_letter.generate'))
             
-            # Get resume content
-            resume = get_resume(int(resume_id), user_id)
-            if not resume:
-                flash('Resume not found', 'error')
+            if not resume_text:
+                flash('❌ Resume is empty', 'error')
+                return redirect(url_for('cover_letter.generate'))
+            
+            if not job_title:
+                flash('❌ Please enter a job title', 'error')
                 return redirect(url_for('cover_letter.generate'))
             
             # Generate cover letter
-            resume_text = resume['original_content'] if isinstance(resume, dict) else resume[3]
+            print(f"📝 Generating cover letter for: {job_title} at {company_name}")
             cover_letter_text = generate_cover_letter(resume_text, job_title, company_name)
             
             if not cover_letter_text:
-                flash('Failed to generate cover letter', 'error')
+                flash('❌ Failed to generate cover letter', 'error')
                 return redirect(url_for('cover_letter.generate'))
             
-            # Save to database
-            save_cover_letter(user_id, int(resume_id), job_title, company_name, cover_letter_text)
+            # Save to database if resume_id exists
+            if resume_id:
+                try:
+                    save_cover_letter(user_id, resume_id, job_title, company_name, cover_letter_text)
+                except Exception as e:
+                    print(f"Warning: Could not save to DB: {e}")
             
             flash('✅ Cover letter generated successfully!', 'success')
             return render_template('cover_letter/result.html', 
@@ -59,7 +86,9 @@ def generate():
         
         except Exception as e:
             print(f"❌ Cover letter error: {e}")
-            flash(f'Error: {str(e)[:100]}', 'error')
+            import traceback
+            traceback.print_exc()
+            flash(f'❌ Error: {str(e)[:100]}', 'error')
             return redirect(url_for('cover_letter.generate'))
     
     return render_template('cover_letter/generate.html', resumes=resumes)
