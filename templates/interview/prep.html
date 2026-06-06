@@ -1,128 +1,92 @@
 {% extends 'base.html' %}
 
-{% block title %}Interview Preparation{% endblock %}
-
 {% block content %}
-<div class="container py-5">
+<div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-md-8">
             <h1 class="mb-4">
-                <i class="fas fa-briefcase text-success"></i> Interview Preparation
+                <i class="fas fa-briefcase"></i> Interview Preparation
             </h1>
-            
-            {% if error %}
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    {{ error }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            {% endif %}
-            
-            <div class="card shadow-sm border-0">
-                <div class="card-body p-4">
-                    <form method="POST">
-                        <div class="mb-3">
-    <label class="form-label fw-bold">Choose Resume:</label>
-    <ul class="nav nav-tabs mb-3" role="tablist">
-        <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="select-tab" data-bs-toggle="tab" 
-                    data-bs-target="#select-pane" type="button" role="tab">
-                Select Existing
-            </button>
-        </li>
-        <li class="nav-item" role="presentation">
-            <button class="nav-link" id="upload-tab" data-bs-toggle="tab" 
-                    data-bs-target="#upload-pane" type="button" role="tab">
-                Upload New
-            </button>
-        </li>
-    </ul>
-    
-    <div class="tab-content">
-        <!-- Select Existing Resume -->
-        <div class="tab-pane fade show active" id="select-pane" role="tabpanel">
-            <select name="resume_id" class="form-control" id="resume_select">
-                <option value="">-- Choose a resume --</option>
-                {% for resume in resumes %}
-                    <option value="{{ resume.id }}">{{ resume.resume_name }}</option>
+
+            {% if get_flashed_messages() %}
+                {% for message in get_flashed_messages() %}
+                    <div class="alert alert-info alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
                 {% endfor %}
-            </select>
-        </div>
-        
-        <!-- Upload New Resume -->
-        <div class="tab-pane fade" id="upload-pane" role="tabpanel">
-            <div class="upload-area border-2 border-dashed p-4 text-center rounded" 
-                 id="dropZone" style="background-color: #f8f9fa; cursor: pointer;">
-                <i class="fas fa-file-pdf fa-2x text-muted mb-2"></i>
-                <p class="mb-1">Drag & drop PDF or click to browse</p>
-                <input type="file" name="resume_file" id="resume_file" class="d-none" accept=".pdf">
-                <small class="text-muted">Maximum 16MB</small>
-            </div>
-            <div id="file-info" class="mt-2" style="display:none;">
-                <div class="alert alert-success">
-                    <i class="fas fa-check-circle"></i> File selected: <span id="file-name"></span>
+            {% endif %}
+
+            <form method="POST" class="card p-4">
+                <div class="mb-4">
+                    <label class="form-label"><strong>Choose Resume:</strong></label>
+                    <div class="btn-group w-100 mb-3" role="group">
+                        <input type="radio" class="btn-check" name="tab" id="select-tab" checked>
+                        <label class="btn btn-outline-primary" for="select-tab">Select Existing</label>
+                        <input type="radio" class="btn-check" name="tab" id="upload-tab">
+                        <label class="btn btn-outline-primary" for="upload-tab">Upload New</label>
+                    </div>
+
+                    <!-- Select Existing Resume -->
+                    <div id="select-section">
+                        {% if resumes and resumes|length > 0 %}
+                            <select name="resume_id" class="form-control" required>
+                                <option value="">-- Choose a resume --</option>
+                                {% for resume in resumes %}
+                                    <option value="{{ resume['id'] }}">
+                                        {{ resume['file_name'] }} 
+                                        {% if resume['ats_score'] %}
+                                            (ATS: {{ resume['ats_score'] }})
+                                        {% endif %}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        {% else %}
+                            <div class="alert alert-warning">
+                                ⚠️ No resumes found. Please upload one first!
+                                <a href="{{ url_for('resume.upload') }}" class="btn btn-sm btn-primary mt-2">
+                                    Upload Resume
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Upload New Resume -->
+                    <div id="upload-section" style="display:none;">
+                        <input type="file" name="new_resume" class="form-control" accept=".pdf,.txt,.docx">
+                        <small class="text-muted">Accepted: PDF, TXT, DOCX</small>
+                    </div>
                 </div>
-            </div>
+
+                <div class="mb-3">
+                    <label for="job_title" class="form-label"><strong>Job Title:</strong></label>
+                    <input type="text" class="form-control" id="job_title" name="job_title" 
+                           placeholder="e.g., Senior Software Engineer" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="company_name" class="form-label"><strong>Company Name:</strong></label>
+                    <input type="text" class="form-control" id="company_name" name="company_name" 
+                           placeholder="e.g., Google">
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-lg w-100">
+                    <i class="fas fa-brain"></i> Generate Interview Prep
+                </button>
+            </form>
         </div>
     </div>
 </div>
-                        
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Target Job Title:</label>
-                            <input type="text" name="job_title" class="form-control" 
-                                   placeholder="e.g., Full Stack Developer" required>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Company Name:</label>
-                            <input type="text" name="company_name" class="form-control" 
-                                   placeholder="e.g., Microsoft" required>
-                        </div>
-                        
-                        <button type="submit" class="btn btn-success btn-lg w-100">
-                            <i class="fas fa-graduation-cap"></i> Generate Interview Prep
-                        </button>
-                        <script>
-const dropZone = document.getElementById('dropZone');
-const fileInput = document.getElementById('resume_file');
-const fileInfo = document.getElementById('file-info');
-const fileName = document.getElementById('file-name');
-const resumeSelect = document.getElementById('resume_select');
 
-// Click to upload
-dropZone.addEventListener('click', () => fileInput.click());
-
-// Drag and drop
-dropZone.addEventListener('dragover', (e) => {
-    e.preventDefault();
-    dropZone.style.backgroundColor = '#e7e9ff';
-});
-
-dropZone.addEventListener('dragleave', () => {
-    dropZone.style.backgroundColor = '#f8f9fa';
-});
-
-dropZone.addEventListener('drop', (e) => {
-    e.preventDefault();
-    dropZone.style.backgroundColor = '#f8f9fa';
-    fileInput.files = e.dataTransfer.files;
-    updateFileInfo();
-});
-
-fileInput.addEventListener('change', updateFileInfo);
-
-function updateFileInfo() {
-    if (fileInput.files.length > 0) {
-        const file = fileInput.files[0];
-        fileName.textContent = file.name;
-        fileInfo.style.display = 'block';
-        resumeSelect.value = '';  // Clear selection when file uploaded
-    }
-}
+<script>
+    document.getElementById('select-tab').addEventListener('change', function() {
+        document.getElementById('select-section').style.display = 'block';
+        document.getElementById('upload-section').style.display = 'none';
+    });
+    
+    document.getElementById('upload-tab').addEventListener('change', function() {
+        document.getElementById('select-section').style.display = 'none';
+        document.getElementById('upload-section').style.display = 'block';
+    });
 </script>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 {% endblock %}
