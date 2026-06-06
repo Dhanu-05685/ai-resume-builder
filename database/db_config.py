@@ -9,11 +9,17 @@ class DatabaseConfig:
     """PostgreSQL database configuration and connection handler"""
     
     def __init__(self):
-        self.host = os.getenv('DB_HOST', 'localhost')
-        self.user = os.getenv('DB_USER', 'postgres')
-        self.password = os.getenv('DB_PASSWORD', '')
-        self.database = os.getenv('DB_NAME', 'ai_resume_builder')
-        self.port = os.getenv('DB_PORT', '5432')
+        # Try environment variables from Render, fall back to .env
+        self.host = os.getenv('DB_HOST') or os.getenv('POSTGRES_HOST', 'localhost')
+        self.user = os.getenv('DB_USER') or os.getenv('POSTGRES_USER', 'postgres')
+        self.password = os.getenv('DB_PASSWORD') or os.getenv('POSTGRES_PASSWORD', '')
+        self.database = os.getenv('DB_NAME') or os.getenv('POSTGRES_DB', 'ai_resume_builder')
+        self.port = os.getenv('DB_PORT') or os.getenv('POSTGRES_PORT', '5432')
+        
+        print(f"🔗 Database Config:")
+        print(f"   Host: {self.host}")
+        print(f"   Database: {self.database}")
+        print(f"   User: {self.user}")
     
     def get_connection(self):
         """Create and return PostgreSQL connection"""
