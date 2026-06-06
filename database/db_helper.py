@@ -232,3 +232,8 @@ def save_subscription(email):
     """Save subscription email"""
     query = "INSERT INTO subscriptions (email) VALUES (%s)"
     return DatabaseHelper.execute_query(query, (email,))
+
+# ============ FUNCTION ALIASES (at the END!) ============
+
+create_resume = save_resume
+update_resume_analysis = save_resume_analysis
