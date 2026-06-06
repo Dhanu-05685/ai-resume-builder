@@ -29,49 +29,39 @@ def allowed_file(filename):
 @resume_bp.route('/upload', methods=['GET', 'POST'])
 @login_required
 def upload():
+    """Upload and process resume"""
+    user_id = session.get('user_id')
+    
     if request.method == 'POST':
-        if 'file' not in request.files:
-            return render_template('resume/upload.html', error='No file selected')
-        
-        file = request.files['file']
-        resume_name = request.form.get('resume_name', '').strip()
-        
-        if not resume_name:
-            return render_template('resume/upload.html', error='Resume name required')
-        
-        if file.filename == '':
-            return render_template('resume/upload.html', error='No file selected')
-        
-        if not allowed_file(file.filename):
-            return render_template('resume/upload.html', error='Only PDF files allowed')
-        
         try:
-            # Extract text from PDF
-            resume_text = extract_text_from_pdf(file)
+            if 'resume_file' not in request.files:
+                flash('No file selected', 'error')
+                return redirect(url_for('resume.upload'))
             
-            if not resume_text:
-                return render_template('resume/upload.html', error='Could not extract text from PDF')
+            file = request.files['resume_file']
+            if file.filename == '':
+                flash('No file selected', 'error')
+                return redirect(url_for('resume.upload'))
             
-            # Save file
-            filename = secure_filename(file.filename)
-            user_id = session['user_id']
-            filename = f"{user_id}_{filename}"
-            os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-            file.save(os.path.join(UPLOAD_FOLDER, filename))
+            # Read file content
+            resume_text = file.read().decode('utf-8', errors='ignore')
             
-            # Store in database
-            resume_id = create_resume(user_id, resume_name, resume_text)
+            # Save to database
+            from database.db_helper import save_resume
+            resume_id = save_resume(user_id, file.filename, resume_text)
             
             if resume_id:
+                flash(f'✅ Resume uploaded! Resume ID: {resume_id}', 'success')
                 return redirect(url_for('resume.analyze', resume_id=resume_id))
             else:
-                return render_template('resume/upload.html', error='Error saving resume')
+                flash('Failed to save resume', 'error')
+                return redirect(url_for('resume.upload'))
         
         except Exception as e:
-            return render_template('resume/upload.html', error=f'Error: {str(e)}')
+            flash(f'Error uploading resume: {str(e)[:100]}', 'error')
+            return redirect(url_for('resume.upload'))
     
     return render_template('resume/upload.html')
-
 # ============ ANALYZE RESUME ============
 
 @resume_bp.route('/<int:resume_id>/analyze', methods=['GET', 'POST'])
