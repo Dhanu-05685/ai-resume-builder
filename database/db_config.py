@@ -1,8 +1,8 @@
 import os
 import psycopg2
+import psycopg2.extras
 from psycopg2 import Error
 from dotenv import load_dotenv
-import psycopg2.extras
 
 load_dotenv()
 
@@ -23,21 +23,21 @@ class DatabaseConfig:
         print(f"   User: {self.user}")
     
     def get_connection(self):
-    """Create and return PostgreSQL connection with DictCursor"""
-    try:
-        connection = psycopg2.connect(
-            host=self.host,
-            user=self.user,
-            password=self.password,
-            database=self.database,
-            port=self.port
-        )
-        # Use DictCursor to return results as dictionaries
-        connection.cursor_factory = psycopg2.extras.DictCursor
-        return connection
-    except Error as e:
-        print(f"❌ Error connecting to PostgreSQL: {e}")
-        return None
+        """Create and return PostgreSQL connection with DictCursor"""
+        try:
+            connection = psycopg2.connect(
+                host=self.host,
+                user=self.user,
+                password=self.password,
+                database=self.database,
+                port=self.port
+            )
+            # Use DictCursor to return results as dictionaries
+            connection.cursor_factory = psycopg2.extras.DictCursor
+            return connection
+        except Error as e:
+            print(f"❌ Error connecting to PostgreSQL: {e}")
+            return None
     
     def test_connection(self):
         """Test if connection is working"""
